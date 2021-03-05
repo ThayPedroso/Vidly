@@ -10,19 +10,22 @@ namespace Vidly.Controllers
 {
     public class CustomersController : Controller
     {
-        private IEnumerable<Customer> GetCustomers()
+        private ApplicationDbContext _context;
+
+        public CustomersController()
         {
-            return new List<Customer>
-            {
-                new Customer { Name = "John Doe", Id = 1 },
-                new Customer { Name = "Mary Smith", Id = 2 },
-                new Customer { Name = "Alex Green", Id = 3 }
-            };
+            _context = new ApplicationDbContext();
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
+        }
+
         // GET: Customer
         public ActionResult Index()
         {
-            var customers = GetCustomers();
+            var customers = _context.Customers.ToList();
 
             return View(customers);
         }
@@ -30,7 +33,7 @@ namespace Vidly.Controllers
         [Route("Customers/Details/{id}")]
         public ActionResult Details(int id)
         {
-            var customer = GetCustomers().SingleOrDefault(c => c.Id == id);
+            var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
 
             return View(customer);
         }
